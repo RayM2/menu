@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>An Evening for Two — Dinner Menu for Surya</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FAF7F2;
+    --parchment: #F2EDE4;
+    --warm-border: #E0D8CC;
+    --gold: #B89A6A;
+    --gold-light: #D4B98A;
+    --ink: #1C1814;
+    --ink-muted: #6B6358;
+    --ink-faint: #A09890;
+    --selected-bg: #F5EFE6;
+    --selected-border: #B89A6A;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 180px;
+  }
+
+  .page {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 4rem 2rem 5rem;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+  }
+
+  .header-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+  }
+
+  .header-rule {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .header-rule-line {
+    flex: 1;
+    height: 0.5px;
+    background: var(--warm-border);
+  }
+
+  .header-rule-diamond {
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(38px, 8vw, 56px);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .header-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-muted);
+    margin-top: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .header-date {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 1.5rem;
+  }
+
+  /* ── Course sections ── */
+  .course {
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .course:nth-child(2) { animation-delay: 0.15s; }
+  .course:nth-child(3) { animation-delay: 0.3s; }
+  .course:nth-child(4) { animation-delay: 0.45s; }
+
+  .course-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .course-line {
+    flex: 1;
+    height: 0.5px;
+    background: var(--warm-border);
+  }
+
+  .course-title {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 9.5px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  /* ── Dish cards ── */
+  .dish-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border: 0.5px solid var(--warm-border);
+    border-radius: 2px;
+    margin-bottom: 0.6rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: transparent;
+  }
+
+  .dish-card:hover {
+    border-color: var(--gold-light);
+    background: var(--parchment);
+  }
+
+  .dish-card.selected {
+    border-color: var(--selected-border);
+    background: var(--selected-bg);
+  }
+
+  .dish-radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 0.5px solid var(--warm-border);
+    flex-shrink: 0;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+  }
+
+  .dish-card.selected .dish-radio {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+
+  .dish-radio-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cream);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .dish-card.selected .dish-radio-dot { opacity: 1; }
+
+  .dish-info { flex: 1; }
+
+  .dish-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin-bottom: 4px;
+    transition: color 0.2s;
+  }
+
+  .dish-card.selected .dish-name { color: var(--gold); }
+
+  .dish-desc {
+    font-size: 12.5px;
+    font-weight: 300;
+    color: var(--ink-muted);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Footer / Summary ── */
+  .menu-footer {
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .footer-rule {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .summary-box {
+    border: 0.5px solid var(--warm-border);
+    border-radius: 2px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    min-height: 80px;
+  }
+
+  .summary-label {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1rem;
+  }
+
+  .summary-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+    font-size: 13px;
+  }
+
+  .summary-course-tag {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    min-width: 52px;
+    padding-top: 2px;
+  }
+
+  .summary-dish-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .summary-empty {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-faint);
+  }
+
+  .confirm-btn {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 2px;
+    border: 0.5px solid var(--warm-border);
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+    transition: all 0.25s;
+  }
+
+  .confirm-btn.ready {
+    border-color: var(--gold);
+    color: var(--gold);
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .confirm-btn.ready:hover {
+    background: var(--gold);
+    color: var(--cream);
+  }
+
+  /* ── Confirmation screen ── */
+  .confirmation {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .confirmation.show { display: block; }
+
+  .confirmation-eyebrow {
+    font-size: 9.5px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+
+  .confirmation h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 36px;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .confirmation h2 em { font-style: italic; color: var(--gold); }
+
+  .confirmation-dishes {
+    margin: 2rem auto;
+    max-width: 380px;
+    border-top: 0.5px solid var(--warm-border);
+    border-bottom: 0.5px solid var(--warm-border);
+    padding: 1.5rem 0;
+  }
+
+  .confirmation-dish-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    gap: 1rem;
+  }
+
+  .confirmation-dish-course {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .confirmation-dish-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--ink);
+    text-align: right;
+  }
+
+  .confirmation-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-muted);
+    margin-top: 1.5rem;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .page { padding: 2.5rem 1.25rem 4rem; }
+    .header h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="page">
+
+  <header class="header">
+    <div class="header-eyebrow">An evening for two</div>
+    <div class="header-rule">
+      <div class="header-rule-line"></div>
+      <div class="header-rule-diamond"></div>
+      <div class="header-rule-line"></div>
+    </div>
+    <h1>Dinner Menu<br><em>for Surya</em></h1>
+    <p class="header-subtitle">Three courses, crafted for you</p>
+    <p class="header-subtitle" style="margin-top:0.35rem; font-size:14px;">Please make your selections below</p>
+  </header>
+
+  <div id="menu-body">
+
+    <!-- Appetizers -->
+    <div class="course">
+      <div class="course-header">
+        <div class="course-line"></div>
+        <div class="course-title">To begin</div>
+        <div class="course-line"></div>
+      </div>
+
+      <div class="dish-card" data-course="appetizer" data-dish="Spiced lamb kofta skewers" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Spiced lamb kofta skewers</div>
+          <div class="dish-desc">Hand-rolled ground lamb seasoned with cumin, allspice, and coriander, grilled and served alongside a cool, garlicky yogurt dipping sauce.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="appetizer" data-dish="Burrata & roasted tomato crostini" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Burrata & roasted tomato crostini</div>
+          <div class="dish-desc">Creamy fresh burrata laid over golden toasted crostini, crowned with slow-roasted cherry tomatoes, fresh basil, and a generous drizzle of olive oil.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="appetizer" data-dish="Pan-fried dumplings" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Pan-fried dumplings</div>
+          <div class="dish-desc">Crispy-bottomed, tender-topped dumplings filled with seasoned meat, served with a soy sesame dipping sauce and a drizzle of chili oil.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="appetizer" data-dish="French onion beef crostini" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">French onion beef crostini</div>
+          <div class="dish-desc">Slow-caramelized onions and tender braised beef piled high on crispy crostini, finished with a rich, deeply savory glaze.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mains -->
+    <div class="course">
+      <div class="course-header">
+        <div class="course-line"></div>
+        <div class="course-title">The main event</div>
+        <div class="course-line"></div>
+      </div>
+
+      <div class="dish-card" data-course="main" data-dish="Chicken shawarma wrap" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Chicken shawarma wrap</div>
+          <div class="dish-desc">Warmly spiced chicken thighs marinated in garlic, cumin, and paprika, tucked into toasted pita with garlic sauce and crisp fresh lettuce.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="main" data-dish="Steak frites" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Steak frites</div>
+          <div class="dish-desc">A perfectly seared steak finished in garlic butter and rested to perfection, served alongside crispy golden frites and a light, glossy pan sauce.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="main" data-dish="Braised chuck steak over parmesan risotto" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Braised chuck steak over parmesan risotto</div>
+          <div class="dish-desc">Fall-apart tender chuck steak braised low and slow in aromatic spices and chicken stock, laid over a silky, slow-stirred parmesan risotto.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="main" data-dish="Penne alla vodka" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Penne alla vodka</div>
+          <div class="dish-desc">Penne tossed in a silky tomato cream sauce kissed with vodka, finished with fragrant basil and a whisper of chili flake heat.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desserts -->
+    <div class="course">
+      <div class="course-header">
+        <div class="course-line"></div>
+        <div class="course-title">To finish</div>
+        <div class="course-line"></div>
+      </div>
+
+      <div class="dish-card" data-course="dessert" data-dish="Tres leches cake" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Tres leches cake</div>
+          <div class="dish-desc">A featherlight sponge soaked in three milks until impossibly tender, crowned with softly whipped cream and a gentle dusting of cinnamon.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="dessert" data-dish="Warm chocolate lava cake" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Warm chocolate lava cake</div>
+          <div class="dish-desc">A rich dark chocolate cake with a molten flowing center, dusted with powdered sugar and served warm, straight from the oven.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="dessert" data-dish="Tiramisu" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Tiramisu</div>
+          <div class="dish-desc">Espresso-soaked ladyfingers layered beneath a cloud of whipped mascarpone cream, finished with a generous veil of cocoa powder.</div>
+        </div>
+      </div>
+
+      <div class="dish-card" data-course="dessert" data-dish="Gulab jamun" onclick="selectDish(this)">
+        <div class="dish-radio"><div class="dish-radio-dot"></div></div>
+        <div class="dish-info">
+          <div class="dish-name">Gulab jamun</div>
+          <div class="dish-desc">Soft milk-solid dumplings fried to a deep golden hue and steeped in a fragrant rose and cardamom syrup until they melt on the tongue.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="menu-footer">
+      <div class="footer-rule">
+        <div class="course-line"></div>
+        <div class="header-rule-diamond"></div>
+        <div class="course-line"></div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-label">Your selections</div>
+        <div id="summary-content">
+          <div class="summary-empty">Nothing selected yet — choose one dish per course above.</div>
+        </div>
+      </div>
+
+      <button class="confirm-btn" id="confirm-btn" disabled onclick="confirmOrder()">
+        Confirm your selections
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Confirmation -->
+  <div class="confirmation" id="confirmation">
+    <div class="confirmation-eyebrow">Selections confirmed</div>
+    <h2>Your selections<br><em>are confirmed</em></h2>
+    <div class="confirmation-dishes" id="confirmation-dishes"></div>
+    <div style="margin-top:2rem;">
+      <button class="confirm-btn ready" style="max-width:280px;margin:0 auto;display:block;" onclick="resetMenu()">Make different selections</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const selections = { appetizer: null, main: null, dessert: null };
+  const courseLabels = { appetizer: 'Starter', main: 'Main', dessert: 'Dessert' };
+
+  function selectDish(card) {
+    const course = card.dataset.course;
+    document.querySelectorAll('[data-course="' + course + '"]').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selections[course] = card.dataset.dish;
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const { appetizer, main, dessert } = selections;
+    const content = document.getElementById('summary-content');
+    const btn = document.getElementById('confirm-btn');
+    const filled = [appetizer, main, dessert].filter(Boolean);
+
+    if (filled.length === 0) {
+      content.innerHTML = '<div class="summary-empty">Nothing selected yet — choose one dish per course above.</div>';
+    } else {
+      let html = '';
+      if (appetizer) html += `<div class="summary-row"><span class="summary-course-tag">Starter</span><span class="summary-dish-name">${appetizer}</span></div>`;
+      if (main)      html += `<div class="summary-row"><span class="summary-course-tag">Main</span><span class="summary-dish-name">${main}</span></div>`;
+      if (dessert)   html += `<div class="summary-row"><span class="summary-course-tag">Dessert</span><span class="summary-dish-name">${dessert}</span></div>`;
+      content.innerHTML = html;
+    }
+
+    if (appetizer && main && dessert) {
+      btn.disabled = false;
+      btn.classList.add('ready');
+    } else {
+      btn.disabled = true;
+      btn.classList.remove('ready');
+    }
+  }
+
+  async function confirmOrder() {
+    const { appetizer, main, dessert } = selections;
+
+    try {
+      await fetch('https://formspree.io/f/xzdjggkd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          starter: appetizer,
+          main: main,
+          dessert: dessert,
+          _subject: "Surya's menu selections are in!"
+        })
+      });
+    } catch (e) {}
+
+    document.getElementById('menu-body').style.display = 'none';
+    const conf = document.getElementById('confirmation');
+    conf.classList.add('show');
+    const dishes = document.getElementById('confirmation-dishes');
+    dishes.innerHTML = `
+      <div class="confirmation-dish-row">
+        <span class="confirmation-dish-course">Starter</span>
+        <span class="confirmation-dish-name">${appetizer}</span>
+      </div>
+      <div class="confirmation-dish-row">
+        <span class="confirmation-dish-course">Main</span>
+        <span class="confirmation-dish-name">${main}</span>
+      </div>
+      <div class="confirmation-dish-row">
+        <span class="confirmation-dish-course">Dessert</span>
+        <span class="confirmation-dish-name">${dessert}</span>
+      </div>`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetMenu() {
+    selections.appetizer = null;
+    selections.main = null;
+    selections.dessert = null;
+    document.querySelectorAll('.dish-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('summary-content').innerHTML = '<div class="summary-empty">Nothing selected yet — choose one dish per course above.</div>';
+    const btn = document.getElementById('confirm-btn');
+    btn.disabled = true;
+    btn.classList.remove('ready');
+    const conf = document.getElementById('confirmation');
+    conf.classList.remove('show');
+    conf.style.display = '';
+    document.getElementById('menu-body').style.display = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
